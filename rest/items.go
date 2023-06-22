@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"MyList/ent"
+	"MyList/ent/user"
 
 	"github.com/gin-gonic/gin"
 )
@@ -20,6 +21,22 @@ func (i Items) Setup(r *gin.RouterGroup) {
 }
 
 func (i Items) Get(c *gin.Context) {
-	items, _ := i.client.Item.Query().All(i.ctx)
+	username, exists := c.GetQuery("username")
+
+	if !exists || username == "" {
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
+	items, itemErr := i.client.User.
+		Query().
+		Where(user.UsernameEQ(username)).
+		QueryItems().
+		All(i.ctx)
+
+	if itemErr != nil {
+		c.AbortWithError(http.StatusInternalServerError, itemErr)
+		return
+	}
 	c.JSON(http.StatusOK, gin.H{"items": items})
 }
