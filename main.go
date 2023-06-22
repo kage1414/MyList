@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"MyList/ent"
+	"MyList/ent/migrate"
 
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
@@ -32,7 +33,7 @@ func main() {
 	}
 	defer client.Close()
 
-	if err := client.Schema.Create(context.Background()); err != nil {
+	if err := client.Schema.Create(context.Background(), migrate.WithGlobalUniqueID(true)); err != nil {
 		log.Fatalf("failed creating schema resources: %v", err)
 	}
 }

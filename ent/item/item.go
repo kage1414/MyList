@@ -4,14 +4,13 @@ package item
 
 import (
 	"entgo.io/ent/dialect/sql"
-	"github.com/google/uuid"
 )
 
 const (
 	// Label holds the string label denoting the item type in the database.
 	Label = "item"
 	// FieldID holds the string denoting the id field in the database.
-	FieldID = "oid"
+	FieldID = "id"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
 	// FieldPriority holds the string denoting the priority field in the database.
@@ -39,11 +38,6 @@ func ValidColumn(column string) bool {
 	}
 	return false
 }
-
-var (
-	// DefaultID holds the default value on creation for the "id" field.
-	DefaultID func() uuid.UUID
-)
 
 // OrderOption defines the ordering options for the Item queries.
 type OrderOption func(*sql.Selector)

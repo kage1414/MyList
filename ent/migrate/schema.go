@@ -10,7 +10,7 @@ import (
 var (
 	// ItemsColumns holds the columns for the "items" table.
 	ItemsColumns = []*schema.Column{
-		{Name: "oid", Type: field.TypeUUID},
+		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "name", Type: field.TypeString},
 		{Name: "priority", Type: field.TypeInt},
 		{Name: "complete", Type: field.TypeBool},

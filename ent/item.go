@@ -9,14 +9,13 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/google/uuid"
 )
 
 // Item is the model entity for the Item schema.
 type Item struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID uuid.UUID `json:"id,omitempty"`
+	ID int `json:"id,omitempty"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
 	// Priority holds the value of the "priority" field.
@@ -33,12 +32,10 @@ func (*Item) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case item.FieldComplete:
 			values[i] = new(sql.NullBool)
-		case item.FieldPriority:
+		case item.FieldID, item.FieldPriority:
 			values[i] = new(sql.NullInt64)
 		case item.FieldName:
 			values[i] = new(sql.NullString)
-		case item.FieldID:
-			values[i] = new(uuid.UUID)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -55,11 +52,11 @@ func (i *Item) assignValues(columns []string, values []any) error {
 	for j := range columns {
 		switch columns[j] {
 		case item.FieldID:
-			if value, ok := values[j].(*uuid.UUID); !ok {
-				return fmt.Errorf("unexpected type %T for field id", values[j])
-			} else if value != nil {
-				i.ID = *value
+			value, ok := values[j].(*sql.NullInt64)
+			if !ok {
+				return fmt.Errorf("unexpected type %T for field id", value)
 			}
+			i.ID = int(value.Int64)
 		case item.FieldName:
 			if value, ok := values[j].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field name", values[j])

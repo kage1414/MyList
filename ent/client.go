@@ -15,7 +15,6 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
-	"github.com/google/uuid"
 )
 
 // Client is the client that holds all ent builders.
@@ -25,6 +24,8 @@ type Client struct {
 	Schema *migrate.Schema
 	// Item is the client for interacting with the Item builders.
 	Item *ItemClient
+	// additional fields for node api
+	tables tables
 }
 
 // NewClient creates a new client configured with the given options.
@@ -235,7 +236,7 @@ func (c *ItemClient) UpdateOne(i *Item) *ItemUpdateOne {
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *ItemClient) UpdateOneID(id uuid.UUID) *ItemUpdateOne {
+func (c *ItemClient) UpdateOneID(id int) *ItemUpdateOne {
 	mutation := newItemMutation(c.config, OpUpdateOne, withItemID(id))
 	return &ItemUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -252,7 +253,7 @@ func (c *ItemClient) DeleteOne(i *Item) *ItemDeleteOne {
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *ItemClient) DeleteOneID(id uuid.UUID) *ItemDeleteOne {
+func (c *ItemClient) DeleteOneID(id int) *ItemDeleteOne {
 	builder := c.Delete().Where(item.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -269,12 +270,12 @@ func (c *ItemClient) Query() *ItemQuery {
 }
 
 // Get returns a Item entity by its id.
-func (c *ItemClient) Get(ctx context.Context, id uuid.UUID) (*Item, error) {
+func (c *ItemClient) Get(ctx context.Context, id int) (*Item, error) {
 	return c.Query().Where(item.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *ItemClient) GetX(ctx context.Context, id uuid.UUID) *Item {
+func (c *ItemClient) GetX(ctx context.Context, id int) *Item {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)

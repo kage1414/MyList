@@ -10,7 +10,6 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/google/uuid"
 )
 
 // ItemCreate is the builder for creating a Item entity.
@@ -38,20 +37,6 @@ func (ic *ItemCreate) SetComplete(b bool) *ItemCreate {
 	return ic
 }
 
-// SetID sets the "id" field.
-func (ic *ItemCreate) SetID(u uuid.UUID) *ItemCreate {
-	ic.mutation.SetID(u)
-	return ic
-}
-
-// SetNillableID sets the "id" field if the given value is not nil.
-func (ic *ItemCreate) SetNillableID(u *uuid.UUID) *ItemCreate {
-	if u != nil {
-		ic.SetID(*u)
-	}
-	return ic
-}
-
 // Mutation returns the ItemMutation object of the builder.
 func (ic *ItemCreate) Mutation() *ItemMutation {
 	return ic.mutation
@@ -59,7 +44,6 @@ func (ic *ItemCreate) Mutation() *ItemMutation {
 
 // Save creates the Item in the database.
 func (ic *ItemCreate) Save(ctx context.Context) (*Item, error) {
-	ic.defaults()
 	return withHooks(ctx, ic.sqlSave, ic.mutation, ic.hooks)
 }
 
@@ -82,14 +66,6 @@ func (ic *ItemCreate) Exec(ctx context.Context) error {
 func (ic *ItemCreate) ExecX(ctx context.Context) {
 	if err := ic.Exec(ctx); err != nil {
 		panic(err)
-	}
-}
-
-// defaults sets the default values of the builder before save.
-func (ic *ItemCreate) defaults() {
-	if _, ok := ic.mutation.ID(); !ok {
-		v := item.DefaultID()
-		ic.mutation.SetID(v)
 	}
 }
 
@@ -118,13 +94,8 @@ func (ic *ItemCreate) sqlSave(ctx context.Context) (*Item, error) {
 		}
 		return nil, err
 	}
-	if _spec.ID.Value != nil {
-		if id, ok := _spec.ID.Value.(*uuid.UUID); ok {
-			_node.ID = *id
-		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
-			return nil, err
-		}
-	}
+	id := _spec.ID.Value.(int64)
+	_node.ID = int(id)
 	ic.mutation.id = &_node.ID
 	ic.mutation.done = true
 	return _node, nil
@@ -133,12 +104,8 @@ func (ic *ItemCreate) sqlSave(ctx context.Context) (*Item, error) {
 func (ic *ItemCreate) createSpec() (*Item, *sqlgraph.CreateSpec) {
 	var (
 		_node = &Item{config: ic.config}
-		_spec = sqlgraph.NewCreateSpec(item.Table, sqlgraph.NewFieldSpec(item.FieldID, field.TypeUUID))
+		_spec = sqlgraph.NewCreateSpec(item.Table, sqlgraph.NewFieldSpec(item.FieldID, field.TypeInt))
 	)
-	if id, ok := ic.mutation.ID(); ok {
-		_node.ID = id
-		_spec.ID.Value = &id
-	}
 	if value, ok := ic.mutation.Name(); ok {
 		_spec.SetField(item.FieldName, field.TypeString, value)
 		_node.Name = value
@@ -168,7 +135,6 @@ func (icb *ItemCreateBulk) Save(ctx context.Context) ([]*Item, error) {
 	for i := range icb.builders {
 		func(i int, root context.Context) {
 			builder := icb.builders[i]
-			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*ItemMutation)
 				if !ok {
@@ -195,6 +161,10 @@ func (icb *ItemCreateBulk) Save(ctx context.Context) ([]*Item, error) {
 					return nil, err
 				}
 				mutation.id = &nodes[i].ID
+				if specs[i].ID.Value != nil {
+					id := specs[i].ID.Value.(int64)
+					nodes[i].ID = int(id)
+				}
 				mutation.done = true
 				return nodes[i], nil
 			})
