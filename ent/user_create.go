@@ -3,6 +3,7 @@
 package ent
 
 import (
+	"MyList/ent/item"
 	"MyList/ent/user"
 	"context"
 	"errors"
@@ -44,6 +45,21 @@ func (uc *UserCreate) SetNillableID(u *uuid.UUID) *UserCreate {
 		uc.SetID(*u)
 	}
 	return uc
+}
+
+// AddItemIDs adds the "items" edge to the Item entity by IDs.
+func (uc *UserCreate) AddItemIDs(ids ...uuid.UUID) *UserCreate {
+	uc.mutation.AddItemIDs(ids...)
+	return uc
+}
+
+// AddItems adds the "items" edges to the Item entity.
+func (uc *UserCreate) AddItems(i ...*Item) *UserCreate {
+	ids := make([]uuid.UUID, len(i))
+	for j := range i {
+		ids[j] = i[j].ID
+	}
+	return uc.AddItemIDs(ids...)
 }
 
 // Mutation returns the UserMutation object of the builder.
@@ -137,6 +153,22 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	if value, ok := uc.mutation.Username(); ok {
 		_spec.SetField(user.FieldUsername, field.TypeInt, value)
 		_node.Username = value
+	}
+	if nodes := uc.mutation.ItemsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ItemsTable,
+			Columns: []string{user.ItemsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(item.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }

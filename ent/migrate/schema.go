@@ -14,12 +14,21 @@ var (
 		{Name: "name", Type: field.TypeString},
 		{Name: "priority", Type: field.TypeInt},
 		{Name: "complete", Type: field.TypeBool, Default: false},
+		{Name: "user_items", Type: field.TypeUUID, Nullable: true},
 	}
 	// ItemsTable holds the schema information for the "items" table.
 	ItemsTable = &schema.Table{
 		Name:       "items",
 		Columns:    ItemsColumns,
 		PrimaryKey: []*schema.Column{ItemsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "items_users_items",
+				Columns:    []*schema.Column{ItemsColumns[4]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
 	}
 	// UsersColumns holds the columns for the "users" table.
 	UsersColumns = []*schema.Column{
@@ -41,4 +50,5 @@ var (
 )
 
 func init() {
+	ItemsTable.ForeignKeys[0].RefTable = UsersTable
 }

@@ -4,6 +4,7 @@ package ent
 
 import (
 	"MyList/ent/item"
+	"MyList/ent/user"
 	"context"
 	"errors"
 	"fmt"
@@ -58,6 +59,25 @@ func (ic *ItemCreate) SetNillableID(u *uuid.UUID) *ItemCreate {
 		ic.SetID(*u)
 	}
 	return ic
+}
+
+// SetUserID sets the "user" edge to the User entity by ID.
+func (ic *ItemCreate) SetUserID(id uuid.UUID) *ItemCreate {
+	ic.mutation.SetUserID(id)
+	return ic
+}
+
+// SetNillableUserID sets the "user" edge to the User entity by ID if the given value is not nil.
+func (ic *ItemCreate) SetNillableUserID(id *uuid.UUID) *ItemCreate {
+	if id != nil {
+		ic = ic.SetUserID(*id)
+	}
+	return ic
+}
+
+// SetUser sets the "user" edge to the User entity.
+func (ic *ItemCreate) SetUser(u *User) *ItemCreate {
+	return ic.SetUserID(u.ID)
 }
 
 // Mutation returns the ItemMutation object of the builder.
@@ -167,6 +187,23 @@ func (ic *ItemCreate) createSpec() (*Item, *sqlgraph.CreateSpec) {
 	if value, ok := ic.mutation.Complete(); ok {
 		_spec.SetField(item.FieldComplete, field.TypeBool, value)
 		_node.Complete = value
+	}
+	if nodes := ic.mutation.UserIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   item.UserTable,
+			Columns: []string{item.UserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.user_items = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }

@@ -6,6 +6,7 @@ import (
 	"MyList/ent/predicate"
 
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/google/uuid"
 )
 
@@ -167,6 +168,29 @@ func UsernameLT(v int) predicate.User {
 // UsernameLTE applies the LTE predicate on the "username" field.
 func UsernameLTE(v int) predicate.User {
 	return predicate.User(sql.FieldLTE(FieldUsername, v))
+}
+
+// HasItems applies the HasEdge predicate on the "items" edge.
+func HasItems() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ItemsTable, ItemsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasItemsWith applies the HasEdge predicate on the "items" edge with a given conditions (other predicates).
+func HasItemsWith(preds ...predicate.Item) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := newItemsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
 }
 
 // And groups predicates with the AND operator between them.
