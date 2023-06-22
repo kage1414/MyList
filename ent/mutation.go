@@ -205,7 +205,7 @@ func (m *ItemMutation) Priority() (r int, exists bool) {
 // OldPriority returns the old "priority" field's value of the Item entity.
 // If the Item object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ItemMutation) OldPriority(ctx context.Context) (v int, err error) {
+func (m *ItemMutation) OldPriority(ctx context.Context) (v *int, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldPriority is only allowed on UpdateOne operations")
 	}
@@ -237,10 +237,24 @@ func (m *ItemMutation) AddedPriority() (r int, exists bool) {
 	return *v, true
 }
 
+// ClearPriority clears the value of the "priority" field.
+func (m *ItemMutation) ClearPriority() {
+	m.priority = nil
+	m.addpriority = nil
+	m.clearedFields[item.FieldPriority] = struct{}{}
+}
+
+// PriorityCleared returns if the "priority" field was cleared in this mutation.
+func (m *ItemMutation) PriorityCleared() bool {
+	_, ok := m.clearedFields[item.FieldPriority]
+	return ok
+}
+
 // ResetPriority resets all changes to the "priority" field.
 func (m *ItemMutation) ResetPriority() {
 	m.priority = nil
 	m.addpriority = nil
+	delete(m.clearedFields, item.FieldPriority)
 }
 
 // SetComplete sets the "complete" field.
@@ -465,7 +479,11 @@ func (m *ItemMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *ItemMutation) ClearedFields() []string {
-	return nil
+	var fields []string
+	if m.FieldCleared(item.FieldPriority) {
+		fields = append(fields, item.FieldPriority)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -478,6 +496,11 @@ func (m *ItemMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *ItemMutation) ClearField(name string) error {
+	switch name {
+	case item.FieldPriority:
+		m.ClearPriority()
+		return nil
+	}
 	return fmt.Errorf("unknown Item nullable field %s", name)
 }
 

@@ -33,6 +33,14 @@ func (ic *ItemCreate) SetPriority(i int) *ItemCreate {
 	return ic
 }
 
+// SetNillablePriority sets the "priority" field if the given value is not nil.
+func (ic *ItemCreate) SetNillablePriority(i *int) *ItemCreate {
+	if i != nil {
+		ic.SetPriority(*i)
+	}
+	return ic
+}
+
 // SetComplete sets the "complete" field.
 func (ic *ItemCreate) SetComplete(b bool) *ItemCreate {
 	ic.mutation.SetComplete(b)
@@ -115,6 +123,10 @@ func (ic *ItemCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (ic *ItemCreate) defaults() {
+	if _, ok := ic.mutation.Priority(); !ok {
+		v := item.DefaultPriority
+		ic.mutation.SetPriority(v)
+	}
 	if _, ok := ic.mutation.Complete(); !ok {
 		v := item.DefaultComplete
 		ic.mutation.SetComplete(v)
@@ -129,9 +141,6 @@ func (ic *ItemCreate) defaults() {
 func (ic *ItemCreate) check() error {
 	if _, ok := ic.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Item.name"`)}
-	}
-	if _, ok := ic.mutation.Priority(); !ok {
-		return &ValidationError{Name: "priority", err: errors.New(`ent: missing required field "Item.priority"`)}
 	}
 	if v, ok := ic.mutation.Priority(); ok {
 		if err := item.PriorityValidator(v); err != nil {
@@ -182,7 +191,7 @@ func (ic *ItemCreate) createSpec() (*Item, *sqlgraph.CreateSpec) {
 	}
 	if value, ok := ic.mutation.Priority(); ok {
 		_spec.SetField(item.FieldPriority, field.TypeInt, value)
-		_node.Priority = value
+		_node.Priority = &value
 	}
 	if value, ok := ic.mutation.Complete(); ok {
 		_spec.SetField(item.FieldComplete, field.TypeBool, value)

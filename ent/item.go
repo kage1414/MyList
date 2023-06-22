@@ -21,7 +21,7 @@ type Item struct {
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
 	// Priority holds the value of the "priority" field.
-	Priority int `json:"priority,omitempty"`
+	Priority *int `json:"priority,omitempty"`
 	// Complete holds the value of the "complete" field.
 	Complete bool `json:"complete,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -99,7 +99,8 @@ func (i *Item) assignValues(columns []string, values []any) error {
 			if value, ok := values[j].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field priority", values[j])
 			} else if value.Valid {
-				i.Priority = int(value.Int64)
+				i.Priority = new(int)
+				*i.Priority = int(value.Int64)
 			}
 		case item.FieldComplete:
 			if value, ok := values[j].(*sql.NullBool); !ok {
@@ -158,8 +159,10 @@ func (i *Item) String() string {
 	builder.WriteString("name=")
 	builder.WriteString(i.Name)
 	builder.WriteString(", ")
-	builder.WriteString("priority=")
-	builder.WriteString(fmt.Sprintf("%v", i.Priority))
+	if v := i.Priority; v != nil {
+		builder.WriteString("priority=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteString(", ")
 	builder.WriteString("complete=")
 	builder.WriteString(fmt.Sprintf("%v", i.Complete))

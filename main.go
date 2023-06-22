@@ -8,12 +8,13 @@ import (
 
 	"MyList/ent"
 	"MyList/ent/migrate"
+	"MyList/rest"
 
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 )
 
-func Client() {
+func main() {
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal("Error loading .env file")
@@ -33,7 +34,10 @@ func Client() {
 	}
 	defer client.Close()
 
-	if err := client.Schema.Create(context.Background(), migrate.WithGlobalUniqueID(true)); err != nil {
+	ctx := context.Background()
+	if err := client.Schema.Create(ctx, migrate.WithGlobalUniqueID(true)); err != nil {
 		log.Fatalf("failed creating schema resources: %v", err)
 	}
+
+	rest.SetupRoutes(client, ctx)
 }

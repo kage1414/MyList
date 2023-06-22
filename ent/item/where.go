@@ -175,6 +175,16 @@ func PriorityLTE(v int) predicate.Item {
 	return predicate.Item(sql.FieldLTE(FieldPriority, v))
 }
 
+// PriorityIsNil applies the IsNil predicate on the "priority" field.
+func PriorityIsNil() predicate.Item {
+	return predicate.Item(sql.FieldIsNull(FieldPriority))
+}
+
+// PriorityNotNil applies the NotNil predicate on the "priority" field.
+func PriorityNotNil() predicate.Item {
+	return predicate.Item(sql.FieldNotNull(FieldPriority))
+}
+
 // CompleteEQ applies the EQ predicate on the "complete" field.
 func CompleteEQ(v bool) predicate.Item {
 	return predicate.Item(sql.FieldEQ(FieldComplete, v))

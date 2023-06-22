@@ -42,9 +42,23 @@ func (iu *ItemUpdate) SetPriority(i int) *ItemUpdate {
 	return iu
 }
 
+// SetNillablePriority sets the "priority" field if the given value is not nil.
+func (iu *ItemUpdate) SetNillablePriority(i *int) *ItemUpdate {
+	if i != nil {
+		iu.SetPriority(*i)
+	}
+	return iu
+}
+
 // AddPriority adds i to the "priority" field.
 func (iu *ItemUpdate) AddPriority(i int) *ItemUpdate {
 	iu.mutation.AddPriority(i)
+	return iu
+}
+
+// ClearPriority clears the value of the "priority" field.
+func (iu *ItemUpdate) ClearPriority() *ItemUpdate {
+	iu.mutation.ClearPriority()
 	return iu
 }
 
@@ -150,6 +164,9 @@ func (iu *ItemUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := iu.mutation.AddedPriority(); ok {
 		_spec.AddField(item.FieldPriority, field.TypeInt, value)
 	}
+	if iu.mutation.PriorityCleared() {
+		_spec.ClearField(item.FieldPriority, field.TypeInt)
+	}
 	if value, ok := iu.mutation.Complete(); ok {
 		_spec.SetField(item.FieldComplete, field.TypeBool, value)
 	}
@@ -215,9 +232,23 @@ func (iuo *ItemUpdateOne) SetPriority(i int) *ItemUpdateOne {
 	return iuo
 }
 
+// SetNillablePriority sets the "priority" field if the given value is not nil.
+func (iuo *ItemUpdateOne) SetNillablePriority(i *int) *ItemUpdateOne {
+	if i != nil {
+		iuo.SetPriority(*i)
+	}
+	return iuo
+}
+
 // AddPriority adds i to the "priority" field.
 func (iuo *ItemUpdateOne) AddPriority(i int) *ItemUpdateOne {
 	iuo.mutation.AddPriority(i)
+	return iuo
+}
+
+// ClearPriority clears the value of the "priority" field.
+func (iuo *ItemUpdateOne) ClearPriority() *ItemUpdateOne {
+	iuo.mutation.ClearPriority()
 	return iuo
 }
 
@@ -352,6 +383,9 @@ func (iuo *ItemUpdateOne) sqlSave(ctx context.Context) (_node *Item, err error) 
 	}
 	if value, ok := iuo.mutation.AddedPriority(); ok {
 		_spec.AddField(item.FieldPriority, field.TypeInt, value)
+	}
+	if iuo.mutation.PriorityCleared() {
+		_spec.ClearField(item.FieldPriority, field.TypeInt)
 	}
 	if value, ok := iuo.mutation.Complete(); ok {
 		_spec.SetField(item.FieldComplete, field.TypeBool, value)

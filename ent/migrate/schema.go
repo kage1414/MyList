@@ -12,7 +12,7 @@ var (
 	ItemsColumns = []*schema.Column{
 		{Name: "oid", Type: field.TypeUUID},
 		{Name: "name", Type: field.TypeString},
-		{Name: "priority", Type: field.TypeInt},
+		{Name: "priority", Type: field.TypeInt, Nullable: true, Default: 1},
 		{Name: "complete", Type: field.TypeBool, Default: false},
 		{Name: "user_items", Type: field.TypeUUID, Nullable: true},
 	}

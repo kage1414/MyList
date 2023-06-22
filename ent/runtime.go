@@ -18,6 +18,8 @@ func init() {
 	_ = itemFields
 	// itemDescPriority is the schema descriptor for priority field.
 	itemDescPriority := itemFields[2].Descriptor()
+	// item.DefaultPriority holds the default value on creation for the priority field.
+	item.DefaultPriority = itemDescPriority.Default.(int)
 	// item.PriorityValidator is a validator for the "priority" field. It is called by the builders before save.
 	item.PriorityValidator = itemDescPriority.Validators[0].(func(int) error)
 	// itemDescComplete is the schema descriptor for complete field.
