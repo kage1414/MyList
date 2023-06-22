@@ -10,7 +10,7 @@ import (
 var (
 	// ItemsColumns holds the columns for the "items" table.
 	ItemsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "oid", Type: field.TypeUUID},
 		{Name: "name", Type: field.TypeString},
 		{Name: "priority", Type: field.TypeInt},
 		{Name: "complete", Type: field.TypeBool},
@@ -21,9 +21,22 @@ var (
 		Columns:    ItemsColumns,
 		PrimaryKey: []*schema.Column{ItemsColumns[0]},
 	}
+	// UsersColumns holds the columns for the "users" table.
+	UsersColumns = []*schema.Column{
+		{Name: "oid", Type: field.TypeUUID},
+		{Name: "name", Type: field.TypeString},
+		{Name: "username", Type: field.TypeInt},
+	}
+	// UsersTable holds the schema information for the "users" table.
+	UsersTable = &schema.Table{
+		Name:       "users",
+		Columns:    UsersColumns,
+		PrimaryKey: []*schema.Column{UsersColumns[0]},
+	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		ItemsTable,
+		UsersTable,
 	}
 )
 

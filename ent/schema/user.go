@@ -7,23 +7,22 @@ import (
 )
 
 // Item holds the schema definition for the Item entity.
-type Item struct {
+type User struct {
 	ent.Schema
 }
 
 // Fields of the Item.
-func (Item) Fields() []ent.Field {
+func (User) Fields() []ent.Field {
 	return []ent.Field{
 		field.UUID("id", uuid.UUID{}).
 			Default(uuid.New).
 			StorageKey("oid"),
 		field.String("name"),
-		field.Int("priority"),
-		field.Bool("complete"),
+		field.Int("username"),
 	}
 }
 
 // Edges of the Item.
-func (Item) Edges() []ent.Edge {
+func (User) Edges() []ent.Edge {
 	return nil
 }
