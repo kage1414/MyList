@@ -33,8 +33,7 @@ var (
 	// UsersColumns holds the columns for the "users" table.
 	UsersColumns = []*schema.Column{
 		{Name: "oid", Type: field.TypeUUID},
-		{Name: "name", Type: field.TypeString},
-		{Name: "username", Type: field.TypeInt},
+		{Name: "username", Type: field.TypeString},
 	}
 	// UsersTable holds the schema information for the "users" table.
 	UsersTable = &schema.Table{

@@ -601,9 +601,7 @@ type UserMutation struct {
 	op            Op
 	typ           string
 	id            *uuid.UUID
-	name          *string
-	username      *int
-	addusername   *int
+	username      *string
 	clearedFields map[string]struct{}
 	items         map[uuid.UUID]struct{}
 	removeditems  map[uuid.UUID]struct{}
@@ -717,50 +715,13 @@ func (m *UserMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
 	}
 }
 
-// SetName sets the "name" field.
-func (m *UserMutation) SetName(s string) {
-	m.name = &s
-}
-
-// Name returns the value of the "name" field in the mutation.
-func (m *UserMutation) Name() (r string, exists bool) {
-	v := m.name
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldName returns the old "name" field's value of the User entity.
-// If the User object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserMutation) OldName(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldName is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldName requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldName: %w", err)
-	}
-	return oldValue.Name, nil
-}
-
-// ResetName resets all changes to the "name" field.
-func (m *UserMutation) ResetName() {
-	m.name = nil
-}
-
 // SetUsername sets the "username" field.
-func (m *UserMutation) SetUsername(i int) {
-	m.username = &i
-	m.addusername = nil
+func (m *UserMutation) SetUsername(s string) {
+	m.username = &s
 }
 
 // Username returns the value of the "username" field in the mutation.
-func (m *UserMutation) Username() (r int, exists bool) {
+func (m *UserMutation) Username() (r string, exists bool) {
 	v := m.username
 	if v == nil {
 		return
@@ -771,7 +732,7 @@ func (m *UserMutation) Username() (r int, exists bool) {
 // OldUsername returns the old "username" field's value of the User entity.
 // If the User object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserMutation) OldUsername(ctx context.Context) (v int, err error) {
+func (m *UserMutation) OldUsername(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldUsername is only allowed on UpdateOne operations")
 	}
@@ -785,28 +746,9 @@ func (m *UserMutation) OldUsername(ctx context.Context) (v int, err error) {
 	return oldValue.Username, nil
 }
 
-// AddUsername adds i to the "username" field.
-func (m *UserMutation) AddUsername(i int) {
-	if m.addusername != nil {
-		*m.addusername += i
-	} else {
-		m.addusername = &i
-	}
-}
-
-// AddedUsername returns the value that was added to the "username" field in this mutation.
-func (m *UserMutation) AddedUsername() (r int, exists bool) {
-	v := m.addusername
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
 // ResetUsername resets all changes to the "username" field.
 func (m *UserMutation) ResetUsername() {
 	m.username = nil
-	m.addusername = nil
 }
 
 // AddItemIDs adds the "items" edge to the Item entity by ids.
@@ -897,10 +839,7 @@ func (m *UserMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *UserMutation) Fields() []string {
-	fields := make([]string, 0, 2)
-	if m.name != nil {
-		fields = append(fields, user.FieldName)
-	}
+	fields := make([]string, 0, 1)
 	if m.username != nil {
 		fields = append(fields, user.FieldUsername)
 	}
@@ -912,8 +851,6 @@ func (m *UserMutation) Fields() []string {
 // schema.
 func (m *UserMutation) Field(name string) (ent.Value, bool) {
 	switch name {
-	case user.FieldName:
-		return m.Name()
 	case user.FieldUsername:
 		return m.Username()
 	}
@@ -925,8 +862,6 @@ func (m *UserMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *UserMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
-	case user.FieldName:
-		return m.OldName(ctx)
 	case user.FieldUsername:
 		return m.OldUsername(ctx)
 	}
@@ -938,15 +873,8 @@ func (m *UserMutation) OldField(ctx context.Context, name string) (ent.Value, er
 // type.
 func (m *UserMutation) SetField(name string, value ent.Value) error {
 	switch name {
-	case user.FieldName:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetName(v)
-		return nil
 	case user.FieldUsername:
-		v, ok := value.(int)
+		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -959,21 +887,13 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
 func (m *UserMutation) AddedFields() []string {
-	var fields []string
-	if m.addusername != nil {
-		fields = append(fields, user.FieldUsername)
-	}
-	return fields
+	return nil
 }
 
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
 func (m *UserMutation) AddedField(name string) (ent.Value, bool) {
-	switch name {
-	case user.FieldUsername:
-		return m.AddedUsername()
-	}
 	return nil, false
 }
 
@@ -982,13 +902,6 @@ func (m *UserMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *UserMutation) AddField(name string, value ent.Value) error {
 	switch name {
-	case user.FieldUsername:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddUsername(v)
-		return nil
 	}
 	return fmt.Errorf("unknown User numeric field %s", name)
 }
@@ -1016,9 +929,6 @@ func (m *UserMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *UserMutation) ResetField(name string) error {
 	switch name {
-	case user.FieldName:
-		m.ResetName()
-		return nil
 	case user.FieldUsername:
 		m.ResetUsername()
 		return nil

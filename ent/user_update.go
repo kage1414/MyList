@@ -29,22 +29,9 @@ func (uu *UserUpdate) Where(ps ...predicate.User) *UserUpdate {
 	return uu
 }
 
-// SetName sets the "name" field.
-func (uu *UserUpdate) SetName(s string) *UserUpdate {
-	uu.mutation.SetName(s)
-	return uu
-}
-
 // SetUsername sets the "username" field.
-func (uu *UserUpdate) SetUsername(i int) *UserUpdate {
-	uu.mutation.ResetUsername()
-	uu.mutation.SetUsername(i)
-	return uu
-}
-
-// AddUsername adds i to the "username" field.
-func (uu *UserUpdate) AddUsername(i int) *UserUpdate {
-	uu.mutation.AddUsername(i)
+func (uu *UserUpdate) SetUsername(s string) *UserUpdate {
+	uu.mutation.SetUsername(s)
 	return uu
 }
 
@@ -125,14 +112,8 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			}
 		}
 	}
-	if value, ok := uu.mutation.Name(); ok {
-		_spec.SetField(user.FieldName, field.TypeString, value)
-	}
 	if value, ok := uu.mutation.Username(); ok {
-		_spec.SetField(user.FieldUsername, field.TypeInt, value)
-	}
-	if value, ok := uu.mutation.AddedUsername(); ok {
-		_spec.AddField(user.FieldUsername, field.TypeInt, value)
+		_spec.SetField(user.FieldUsername, field.TypeString, value)
 	}
 	if uu.mutation.ItemsCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -199,22 +180,9 @@ type UserUpdateOne struct {
 	mutation *UserMutation
 }
 
-// SetName sets the "name" field.
-func (uuo *UserUpdateOne) SetName(s string) *UserUpdateOne {
-	uuo.mutation.SetName(s)
-	return uuo
-}
-
 // SetUsername sets the "username" field.
-func (uuo *UserUpdateOne) SetUsername(i int) *UserUpdateOne {
-	uuo.mutation.ResetUsername()
-	uuo.mutation.SetUsername(i)
-	return uuo
-}
-
-// AddUsername adds i to the "username" field.
-func (uuo *UserUpdateOne) AddUsername(i int) *UserUpdateOne {
-	uuo.mutation.AddUsername(i)
+func (uuo *UserUpdateOne) SetUsername(s string) *UserUpdateOne {
+	uuo.mutation.SetUsername(s)
 	return uuo
 }
 
@@ -325,14 +293,8 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			}
 		}
 	}
-	if value, ok := uuo.mutation.Name(); ok {
-		_spec.SetField(user.FieldName, field.TypeString, value)
-	}
 	if value, ok := uuo.mutation.Username(); ok {
-		_spec.SetField(user.FieldUsername, field.TypeInt, value)
-	}
-	if value, ok := uuo.mutation.AddedUsername(); ok {
-		_spec.AddField(user.FieldUsername, field.TypeInt, value)
+		_spec.SetField(user.FieldUsername, field.TypeString, value)
 	}
 	if uuo.mutation.ItemsCleared() {
 		edge := &sqlgraph.EdgeSpec{

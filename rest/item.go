@@ -21,6 +21,7 @@ type Item struct {
 type ItemPostBody struct {
 	Name     *string `json:"name,omitempty"`
 	Priority *int    `json:"priority,omitempty"`
+	Username *string `json:"username,omitempty"`
 }
 
 func (i Item) Setup(r *gin.Engine) {
@@ -39,10 +40,12 @@ func (i Item) Post(c *gin.Context) {
 	bodyAsByteArray, _ := io.ReadAll(c.Request.Body)
 	json.Unmarshal(bodyAsByteArray, &body)
 
-	if body.Name == nil {
+	if body.Name == nil || body.Username == nil {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
+
+	// newID, _ := i.client.User.Create().SetUsername(*body.Username).Save(i.ctx)
 
 	item, err := i.client.Item.Create().SetName(*body.Name).SetNillablePriority(body.Priority).Save(i.ctx)
 	if err != nil {
