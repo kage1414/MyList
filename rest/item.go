@@ -3,10 +3,12 @@ package rest
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 
 	"MyList/ent"
+	"MyList/ent/user"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -37,19 +39,39 @@ func (i Item) Get(c *gin.Context) {
 
 func (i Item) Post(c *gin.Context) {
 	var body ItemPostBody
-	bodyAsByteArray, _ := io.ReadAll(c.Request.Body)
+	bodyAsByteArray, bodyErr := io.ReadAll(c.Request.Body)
+	if bodyErr != nil {
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
 	json.Unmarshal(bodyAsByteArray, &body)
+
+	fmt.Println("body", body.Username)
 
 	if body.Name == nil || body.Username == nil {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
 
-	// newID, _ := i.client.User.Create().SetUsername(*body.Username).Save(i.ctx)
+	userId, userErr := i.client.User.Create().
+		SetUsername(*body.Username).
+		OnConflictColumns(user.FieldUsername).
+		UpdateNewValues().
+		ID(i.ctx)
 
-	item, err := i.client.Item.Create().SetName(*body.Name).SetNillablePriority(body.Priority).Save(i.ctx)
-	if err != nil {
-		c.AbortWithStatus(http.StatusInternalServerError)
+	if userErr != nil {
+		c.AbortWithError(http.StatusInternalServerError, userErr)
+		return
+	}
+
+	item, itemErr := i.client.Item.Create().
+		SetName(*body.Name).
+		SetNillablePriority(body.Priority).
+		SetUserID(userId).
+		Save(i.ctx)
+
+	if itemErr != nil {
+		c.AbortWithError(http.StatusInternalServerError, itemErr)
 		return
 	}
 
