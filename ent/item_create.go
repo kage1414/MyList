@@ -38,6 +38,14 @@ func (ic *ItemCreate) SetComplete(b bool) *ItemCreate {
 	return ic
 }
 
+// SetNillableComplete sets the "complete" field if the given value is not nil.
+func (ic *ItemCreate) SetNillableComplete(b *bool) *ItemCreate {
+	if b != nil {
+		ic.SetComplete(*b)
+	}
+	return ic
+}
+
 // SetID sets the "id" field.
 func (ic *ItemCreate) SetID(u uuid.UUID) *ItemCreate {
 	ic.mutation.SetID(u)
@@ -87,6 +95,10 @@ func (ic *ItemCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (ic *ItemCreate) defaults() {
+	if _, ok := ic.mutation.Complete(); !ok {
+		v := item.DefaultComplete
+		ic.mutation.SetComplete(v)
+	}
 	if _, ok := ic.mutation.ID(); !ok {
 		v := item.DefaultID()
 		ic.mutation.SetID(v)
@@ -100,6 +112,11 @@ func (ic *ItemCreate) check() error {
 	}
 	if _, ok := ic.mutation.Priority(); !ok {
 		return &ValidationError{Name: "priority", err: errors.New(`ent: missing required field "Item.priority"`)}
+	}
+	if v, ok := ic.mutation.Priority(); ok {
+		if err := item.PriorityValidator(v); err != nil {
+			return &ValidationError{Name: "priority", err: fmt.Errorf(`ent: validator failed for field "Item.priority": %w`, err)}
+		}
 	}
 	if _, ok := ic.mutation.Complete(); !ok {
 		return &ValidationError{Name: "complete", err: errors.New(`ent: missing required field "Item.complete"`)}

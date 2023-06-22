@@ -41,6 +41,10 @@ func ValidColumn(column string) bool {
 }
 
 var (
+	// PriorityValidator is a validator for the "priority" field. It is called by the builders before save.
+	PriorityValidator func(int) error
+	// DefaultComplete holds the default value on creation for the "complete" field.
+	DefaultComplete bool
 	// DefaultID holds the default value on creation for the "id" field.
 	DefaultID func() uuid.UUID
 )

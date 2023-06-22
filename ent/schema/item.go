@@ -18,8 +18,10 @@ func (Item) Fields() []ent.Field {
 			Default(uuid.New).
 			StorageKey("oid"),
 		field.String("name"),
-		field.Int("priority"),
-		field.Bool("complete"),
+		field.Int("priority").
+			Range(1, 100),
+		field.Bool("complete").
+			Default(false),
 	}
 }
 

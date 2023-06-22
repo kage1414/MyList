@@ -52,6 +52,14 @@ func (iu *ItemUpdate) SetComplete(b bool) *ItemUpdate {
 	return iu
 }
 
+// SetNillableComplete sets the "complete" field if the given value is not nil.
+func (iu *ItemUpdate) SetNillableComplete(b *bool) *ItemUpdate {
+	if b != nil {
+		iu.SetComplete(*b)
+	}
+	return iu
+}
+
 // Mutation returns the ItemMutation object of the builder.
 func (iu *ItemUpdate) Mutation() *ItemMutation {
 	return iu.mutation
@@ -84,7 +92,20 @@ func (iu *ItemUpdate) ExecX(ctx context.Context) {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (iu *ItemUpdate) check() error {
+	if v, ok := iu.mutation.Priority(); ok {
+		if err := item.PriorityValidator(v); err != nil {
+			return &ValidationError{Name: "priority", err: fmt.Errorf(`ent: validator failed for field "Item.priority": %w`, err)}
+		}
+	}
+	return nil
+}
+
 func (iu *ItemUpdate) sqlSave(ctx context.Context) (n int, err error) {
+	if err := iu.check(); err != nil {
+		return n, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(item.Table, item.Columns, sqlgraph.NewFieldSpec(item.FieldID, field.TypeUUID))
 	if ps := iu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
@@ -150,6 +171,14 @@ func (iuo *ItemUpdateOne) SetComplete(b bool) *ItemUpdateOne {
 	return iuo
 }
 
+// SetNillableComplete sets the "complete" field if the given value is not nil.
+func (iuo *ItemUpdateOne) SetNillableComplete(b *bool) *ItemUpdateOne {
+	if b != nil {
+		iuo.SetComplete(*b)
+	}
+	return iuo
+}
+
 // Mutation returns the ItemMutation object of the builder.
 func (iuo *ItemUpdateOne) Mutation() *ItemMutation {
 	return iuo.mutation
@@ -195,7 +224,20 @@ func (iuo *ItemUpdateOne) ExecX(ctx context.Context) {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (iuo *ItemUpdateOne) check() error {
+	if v, ok := iuo.mutation.Priority(); ok {
+		if err := item.PriorityValidator(v); err != nil {
+			return &ValidationError{Name: "priority", err: fmt.Errorf(`ent: validator failed for field "Item.priority": %w`, err)}
+		}
+	}
+	return nil
+}
+
 func (iuo *ItemUpdateOne) sqlSave(ctx context.Context) (_node *Item, err error) {
+	if err := iuo.check(); err != nil {
+		return _node, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(item.Table, item.Columns, sqlgraph.NewFieldSpec(item.FieldID, field.TypeUUID))
 	id, ok := iuo.mutation.ID()
 	if !ok {

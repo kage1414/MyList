@@ -13,7 +13,7 @@ var (
 		{Name: "oid", Type: field.TypeUUID},
 		{Name: "name", Type: field.TypeString},
 		{Name: "priority", Type: field.TypeInt},
-		{Name: "complete", Type: field.TypeBool},
+		{Name: "complete", Type: field.TypeBool, Default: false},
 	}
 	// ItemsTable holds the schema information for the "items" table.
 	ItemsTable = &schema.Table{
