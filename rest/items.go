@@ -15,7 +15,7 @@ type Items struct {
 	ctx    context.Context
 }
 
-func (i Items) Setup(r *gin.Engine) {
+func (i Items) Setup(r *gin.RouterGroup) {
 	r.GET(i.route, i.Get)
 }
 

@@ -26,7 +26,7 @@ type ItemPostBody struct {
 	Username *string `json:"username,omitempty"`
 }
 
-func (i Item) Setup(r *gin.Engine) {
+func (i Item) Setup(r *gin.RouterGroup) {
 	r.GET(i.route, i.Get)
 	r.POST(i.route, i.Post)
 }
