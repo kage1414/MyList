@@ -18,7 +18,8 @@ func (User) Fields() []ent.Field {
 		field.UUID("id", uuid.UUID{}).
 			Default(uuid.New).
 			StorageKey("oid"),
-		field.String("username"),
+		field.String("username").
+			Unique(),
 	}
 }
 
