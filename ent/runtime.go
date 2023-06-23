@@ -16,6 +16,10 @@ import (
 func init() {
 	itemFields := schema.Item{}.Fields()
 	_ = itemFields
+	// itemDescName is the schema descriptor for name field.
+	itemDescName := itemFields[1].Descriptor()
+	// item.DefaultName holds the default value on creation for the name field.
+	item.DefaultName = itemDescName.Default.(string)
 	// itemDescPriority is the schema descriptor for priority field.
 	itemDescPriority := itemFields[2].Descriptor()
 	// item.DefaultPriority holds the default value on creation for the priority field.

@@ -30,6 +30,14 @@ func (ic *ItemCreate) SetName(s string) *ItemCreate {
 	return ic
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (ic *ItemCreate) SetNillableName(s *string) *ItemCreate {
+	if s != nil {
+		ic.SetName(*s)
+	}
+	return ic
+}
+
 // SetPriority sets the "priority" field.
 func (ic *ItemCreate) SetPriority(i int) *ItemCreate {
 	ic.mutation.SetPriority(i)
@@ -126,6 +134,10 @@ func (ic *ItemCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (ic *ItemCreate) defaults() {
+	if _, ok := ic.mutation.Name(); !ok {
+		v := item.DefaultName
+		ic.mutation.SetName(v)
+	}
 	if _, ok := ic.mutation.Priority(); !ok {
 		v := item.DefaultPriority
 		ic.mutation.SetPriority(v)
@@ -142,9 +154,6 @@ func (ic *ItemCreate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (ic *ItemCreate) check() error {
-	if _, ok := ic.mutation.Name(); !ok {
-		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Item.name"`)}
-	}
 	if v, ok := ic.mutation.Priority(); ok {
 		if err := item.PriorityValidator(v); err != nil {
 			return &ValidationError{Name: "priority", err: fmt.Errorf(`ent: validator failed for field "Item.priority": %w`, err)}
@@ -282,6 +291,12 @@ func (u *ItemUpsert) UpdateName() *ItemUpsert {
 	return u
 }
 
+// ClearName clears the value of the "name" field.
+func (u *ItemUpsert) ClearName() *ItemUpsert {
+	u.SetNull(item.FieldName)
+	return u
+}
+
 // SetPriority sets the "priority" field.
 func (u *ItemUpsert) SetPriority(v int) *ItemUpsert {
 	u.Set(item.FieldPriority, v)
@@ -377,6 +392,13 @@ func (u *ItemUpsertOne) SetName(v string) *ItemUpsertOne {
 func (u *ItemUpsertOne) UpdateName() *ItemUpsertOne {
 	return u.Update(func(s *ItemUpsert) {
 		s.UpdateName()
+	})
+}
+
+// ClearName clears the value of the "name" field.
+func (u *ItemUpsertOne) ClearName() *ItemUpsertOne {
+	return u.Update(func(s *ItemUpsert) {
+		s.ClearName()
 	})
 }
 
@@ -644,6 +666,13 @@ func (u *ItemUpsertBulk) SetName(v string) *ItemUpsertBulk {
 func (u *ItemUpsertBulk) UpdateName() *ItemUpsertBulk {
 	return u.Update(func(s *ItemUpsert) {
 		s.UpdateName()
+	})
+}
+
+// ClearName clears the value of the "name" field.
+func (u *ItemUpsertBulk) ClearName() *ItemUpsertBulk {
+	return u.Update(func(s *ItemUpsert) {
+		s.ClearName()
 	})
 }
 

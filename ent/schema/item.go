@@ -18,7 +18,9 @@ func (Item) Fields() []ent.Field {
 		field.UUID("id", uuid.UUID{}).
 			Default(uuid.New).
 			StorageKey("oid"),
-		field.String("name"),
+		field.String("name").
+			Optional().
+			Default(""),
 		field.Int("priority").
 			Range(1, 100).
 			Optional().

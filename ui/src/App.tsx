@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import "./App.css";
 import { Login } from "./Login";
 
-import { ListPage } from "./List";
+import { TableSelectionContainer } from "./TableSelection/TableSelection.container";
 
 function App() {
   const [username, setUsername] = useState("");
@@ -19,7 +19,7 @@ function App() {
   return (
     <>
       {username ? (
-        <ListPage username={username} />
+        <TableSelectionContainer username={username} />
       ) : (
         <Login username={username} handleUsername={handleUsername} />
       )}

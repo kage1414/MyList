@@ -11,7 +11,7 @@ var (
 	// ItemsColumns holds the columns for the "items" table.
 	ItemsColumns = []*schema.Column{
 		{Name: "oid", Type: field.TypeUUID},
-		{Name: "name", Type: field.TypeString},
+		{Name: "name", Type: field.TypeString, Nullable: true, Default: ""},
 		{Name: "priority", Type: field.TypeInt, Nullable: true, Default: 1},
 		{Name: "complete", Type: field.TypeBool, Default: false},
 		{Name: "user_items", Type: field.TypeUUID, Nullable: true},

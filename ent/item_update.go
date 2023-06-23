@@ -35,6 +35,20 @@ func (iu *ItemUpdate) SetName(s string) *ItemUpdate {
 	return iu
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (iu *ItemUpdate) SetNillableName(s *string) *ItemUpdate {
+	if s != nil {
+		iu.SetName(*s)
+	}
+	return iu
+}
+
+// ClearName clears the value of the "name" field.
+func (iu *ItemUpdate) ClearName() *ItemUpdate {
+	iu.mutation.ClearName()
+	return iu
+}
+
 // SetPriority sets the "priority" field.
 func (iu *ItemUpdate) SetPriority(i int) *ItemUpdate {
 	iu.mutation.ResetPriority()
@@ -158,6 +172,9 @@ func (iu *ItemUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := iu.mutation.Name(); ok {
 		_spec.SetField(item.FieldName, field.TypeString, value)
 	}
+	if iu.mutation.NameCleared() {
+		_spec.ClearField(item.FieldName, field.TypeString)
+	}
 	if value, ok := iu.mutation.Priority(); ok {
 		_spec.SetField(item.FieldPriority, field.TypeInt, value)
 	}
@@ -222,6 +239,20 @@ type ItemUpdateOne struct {
 // SetName sets the "name" field.
 func (iuo *ItemUpdateOne) SetName(s string) *ItemUpdateOne {
 	iuo.mutation.SetName(s)
+	return iuo
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (iuo *ItemUpdateOne) SetNillableName(s *string) *ItemUpdateOne {
+	if s != nil {
+		iuo.SetName(*s)
+	}
+	return iuo
+}
+
+// ClearName clears the value of the "name" field.
+func (iuo *ItemUpdateOne) ClearName() *ItemUpdateOne {
+	iuo.mutation.ClearName()
 	return iuo
 }
 
@@ -377,6 +408,9 @@ func (iuo *ItemUpdateOne) sqlSave(ctx context.Context) (_node *Item, err error) 
 	}
 	if value, ok := iuo.mutation.Name(); ok {
 		_spec.SetField(item.FieldName, field.TypeString, value)
+	}
+	if iuo.mutation.NameCleared() {
+		_spec.ClearField(item.FieldName, field.TypeString)
 	}
 	if value, ok := iuo.mutation.Priority(); ok {
 		_spec.SetField(item.FieldPriority, field.TypeInt, value)

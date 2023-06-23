@@ -182,9 +182,22 @@ func (m *ItemMutation) OldName(ctx context.Context) (v string, err error) {
 	return oldValue.Name, nil
 }
 
+// ClearName clears the value of the "name" field.
+func (m *ItemMutation) ClearName() {
+	m.name = nil
+	m.clearedFields[item.FieldName] = struct{}{}
+}
+
+// NameCleared returns if the "name" field was cleared in this mutation.
+func (m *ItemMutation) NameCleared() bool {
+	_, ok := m.clearedFields[item.FieldName]
+	return ok
+}
+
 // ResetName resets all changes to the "name" field.
 func (m *ItemMutation) ResetName() {
 	m.name = nil
+	delete(m.clearedFields, item.FieldName)
 }
 
 // SetPriority sets the "priority" field.
@@ -480,6 +493,9 @@ func (m *ItemMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *ItemMutation) ClearedFields() []string {
 	var fields []string
+	if m.FieldCleared(item.FieldName) {
+		fields = append(fields, item.FieldName)
+	}
 	if m.FieldCleared(item.FieldPriority) {
 		fields = append(fields, item.FieldPriority)
 	}
@@ -497,6 +513,9 @@ func (m *ItemMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *ItemMutation) ClearField(name string) error {
 	switch name {
+	case item.FieldName:
+		m.ClearName()
+		return nil
 	case item.FieldPriority:
 		m.ClearPriority()
 		return nil
