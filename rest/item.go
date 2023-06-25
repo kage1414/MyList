@@ -3,10 +3,12 @@ package rest
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 
 	"MyList/ent"
+	"MyList/ent/item"
 	"MyList/ent/user"
 
 	"github.com/gin-gonic/gin"
@@ -30,19 +32,28 @@ type ItemDeleteBody struct {
 	Username *string `json:"username,omitempty"`
 }
 
-func (i Item) Setup(r *gin.RouterGroup) {
-	r.GET(i.route, i.Get)
-	r.POST(i.route, i.Post)
-	r.DELETE(i.route, i.Delete)
+type ItemPutBody struct {
+	ID       string  `json:"id,omitempty"`
+	Name     *string `json:"name,omitempty"`
+	Priority *int    `json:"priority,omitempty"`
+	Username *string `json:"username,omitempty"`
+	Complete *bool   `json:"complete,omitempty"`
 }
 
-func (i Item) Get(c *gin.Context) {
+func (i Item) Setup(r *gin.RouterGroup) {
+	r.GET(i.route, i.get)
+	r.PUT(i.route, i.put)
+	r.POST(i.route, i.post)
+	r.DELETE(i.route, i.delete)
+}
+
+func (i Item) get(c *gin.Context) {
 	id, _ := uuid.Parse(c.Query("id"))
 	item, _ := i.client.Item.Get(i.ctx, id)
 	c.JSON(http.StatusOK, gin.H{"item": item})
 }
 
-func (i Item) Post(c *gin.Context) {
+func (i Item) post(c *gin.Context) {
 	var body ItemPostBody
 	bodyAsByteArray, bodyErr := io.ReadAll(c.Request.Body)
 	if bodyErr != nil {
@@ -81,7 +92,67 @@ func (i Item) Post(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"item": item})
 }
 
-func (i Item) Delete(c *gin.Context) {
+func (i Item) put(c *gin.Context) {
+	var body ItemPutBody
+	bodyAsByteArray, bodyErr := io.ReadAll(c.Request.Body)
+	if bodyErr != nil {
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+	json.Unmarshal(bodyAsByteArray, &body)
+
+	id, idErr := uuid.Parse(body.ID)
+
+	if idErr != nil {
+		fmt.Println("idErr")
+		c.AbortWithError(http.StatusInternalServerError, idErr)
+		return
+	}
+
+	item, itemErr := i.client.Item.Query().
+		Where(item.IDEQ(id)).
+		Only(i.ctx)
+
+	if itemErr != nil {
+		fmt.Println("itemErr")
+		c.AbortWithError(http.StatusInternalServerError, itemErr)
+		return
+	}
+
+	// user := item.QueryUser().OnlyX(i.ctx)
+
+	// if user.Username != *body.Username {
+	// 	fmt.Println("username Err")
+	// 	c.AbortWithStatus(http.StatusForbidden)
+	// 	return
+	// }
+
+	draft := i.client.Item.UpdateOne(item)
+
+	if body.Name != nil {
+		draft.SetName(*body.Name)
+	}
+
+	if body.Priority != nil {
+		draft.SetPriority(*body.Priority)
+	}
+
+	if body.Complete != nil {
+		draft.SetComplete(*body.Complete)
+	}
+
+	_, saveErr := draft.Save(i.ctx)
+
+	if saveErr != nil {
+		fmt.Println("saveErr")
+		c.AbortWithError(http.StatusInternalServerError, saveErr)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"item": item})
+}
+
+func (i Item) delete(c *gin.Context) {
 	var body ItemDeleteBody
 	bodyAsByteArray, bodyErr := io.ReadAll(c.Request.Body)
 	if bodyErr != nil {

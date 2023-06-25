@@ -21,7 +21,6 @@ export const AddRow = ({ fetchData, username }: Props) => {
     axios
       .post("/api/item", { name: form.values.newItem, username })
       .then(() => {
-        console.log("here");
         fetchData();
       });
   };

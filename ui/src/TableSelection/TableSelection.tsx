@@ -1,6 +1,5 @@
 import { Item } from "./TableSelection.container";
 
-import { useState } from "react";
 import { Table, Checkbox, ScrollArea, Group, Text, rem } from "@mantine/core";
 import { useStyles } from "./styles";
 import { DeleteRow } from "./DeleteRow";
@@ -9,30 +8,33 @@ type Props = {
   items: Item[];
   username: string;
   fetchData: () => void;
+  onToggleAll: React.ChangeEventHandler<HTMLInputElement>;
+  onToggleRow: (
+    item: Item,
+    complete?: boolean,
+    shouldRefetch?: boolean
+  ) => void;
 };
 
-export const TableSelection = ({ items, username, fetchData }: Props) => {
+export const TableSelection = ({
+  items,
+  username,
+  fetchData,
+  onToggleAll,
+  onToggleRow,
+}: Props) => {
   const { classes, cx } = useStyles();
-  const [selection, setSelection] = useState(["1"]);
-  const toggleRow = (id: string) =>
-    setSelection((current) =>
-      current.includes(id)
-        ? current.filter((item) => item !== id)
-        : [...current, id]
-    );
-  const toggleAll = () =>
-    setSelection((current) =>
-      current.length === items.length ? [] : items.map((item) => item.id)
-    );
 
   const rows = items.map((item) => {
-    const selected = selection.includes(item.id);
     return (
-      <tr key={item.id} className={cx({ [classes.rowSelected]: selected })}>
+      <tr
+        key={JSON.stringify(item)}
+        className={cx({ [classes.rowSelected]: item.complete })}
+      >
         <td>
           <Checkbox
-            checked={selection.includes(item.id)}
-            onChange={() => toggleRow(item.id)}
+            checked={item.complete}
+            onChange={() => onToggleRow(item)}
             transitionDuration={0}
           />
         </td>
@@ -53,6 +55,10 @@ export const TableSelection = ({ items, username, fetchData }: Props) => {
       </tr>
     );
   });
+
+  const indeterminate =
+    items.some((item) => item.complete) &&
+    !items.every((item) => item.complete);
   return (
     <ScrollArea>
       <Table miw={800} verticalSpacing="sm">
@@ -60,11 +66,9 @@ export const TableSelection = ({ items, username, fetchData }: Props) => {
           <tr>
             <th style={{ width: rem(40) }}>
               <Checkbox
-                onChange={toggleAll}
-                checked={selection.length === items.length}
-                indeterminate={
-                  selection.length > 0 && selection.length !== items.length
-                }
+                onChange={onToggleAll}
+                checked={items.every((item) => item.complete)}
+                indeterminate={indeterminate}
                 transitionDuration={0}
               />
             </th>

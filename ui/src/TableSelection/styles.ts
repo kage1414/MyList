@@ -10,4 +10,9 @@ export const useStyles = createStyles((theme) => ({
   addRow: {
     justifyContent: "start",
   },
+  container: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "start",
+  },
 }));

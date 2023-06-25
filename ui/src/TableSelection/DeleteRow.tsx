@@ -8,8 +8,6 @@ type Props = {
   fetchData: () => void;
 };
 export const DeleteRow = ({ username, rowId, fetchData }: Props) => {
-  console.log({ username, rowId });
-
   const handleDelete: React.MouseEventHandler<HTMLButtonElement> = () => {
     axios.delete("/api/item", { data: { id: rowId, username } }).then(() => {
       fetchData();

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import "./App.css";
 import { Login } from "./Login";
@@ -11,10 +11,6 @@ function App() {
   const handleUsername = (username: string) => {
     setUsername(username);
   };
-
-  useEffect(() => {
-    console.log(username);
-  }, [username]);
 
   return (
     <>
