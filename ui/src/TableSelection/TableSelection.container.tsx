@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { TableSelection } from "./TableSelection";
 import axios from "axios";
 import { AddRow } from "./AddRow";
-import { Box, Button } from "@mantine/core";
+import { Box } from "@mantine/core";
 import { useStyles } from "./styles";
 
 const INTERVAL = 60000;
