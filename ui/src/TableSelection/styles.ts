@@ -8,17 +8,18 @@ export const useStyles = createStyles((theme) => ({
         : theme.colors[theme.primaryColor][0],
   },
   addRow: {
-    justifyContent: "start",
-  },
-  container: {
+    flexDirection: "row",
     display: "flex",
-    flexDirection: "column",
-    justifyContent: "start",
   },
+  container: {},
   logout: {
     width: 100,
-    position: "fixed",
-    top: 50,
-    left: 50,
+  },
+  addRowContainer: {
+    flexDirection: "row",
+    display: "flex",
+    justifyContent: "space-between",
+    paddingTop: 30,
+    paddingBottom: 30,
   },
 }));

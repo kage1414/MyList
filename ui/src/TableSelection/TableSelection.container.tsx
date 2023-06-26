@@ -79,10 +79,7 @@ export const TableSelectionContainer = ({ username, onLogout }: Props) => {
 
   return (
     <Box className={classes.container}>
-      <Button className={classes.logout} onClick={onLogout}>
-        Logout
-      </Button>
-      <AddRow fetchData={fetchData} username={username} />
+      <AddRow fetchData={fetchData} username={username} onLogout={onLogout} />
       <TableSelection
         items={items}
         username={username}

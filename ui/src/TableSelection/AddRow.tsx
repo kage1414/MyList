@@ -6,9 +6,10 @@ import axios from "axios";
 type Props = {
   fetchData: () => void;
   username: string;
+  onLogout: React.MouseEventHandler<HTMLButtonElement>;
 };
 
-export const AddRow = ({ fetchData, username }: Props) => {
+export const AddRow = ({ fetchData, username, onLogout }: Props) => {
   const { classes } = useStyles();
   const form = useForm({
     initialValues: {
@@ -27,14 +28,13 @@ export const AddRow = ({ fetchData, username }: Props) => {
   };
 
   return (
-    <Box className={classes.addRow}>
+    <Box className={classes.addRowContainer}>
+      <Button className={classes.logout} onClick={onLogout}>
+        Logout
+      </Button>
       <form className={classes.addRow} onSubmit={handleSubmit}>
-        <TextInput
-          label="New Item"
-          placeholder="Item"
-          {...form.getInputProps("newItem")}
-        />
-        <Button type="submit">Submit</Button>
+        <TextInput placeholder="Item" {...form.getInputProps("newItem")} />
+        <Button type="submit">Add</Button>
       </form>
     </Box>
   );
