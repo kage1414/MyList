@@ -67,7 +67,7 @@ export const TableSelection = ({
             <th style={{ width: rem(40) }}>
               <Checkbox
                 onChange={onToggleAll}
-                checked={items.every((item) => item.complete)}
+                checked={!!items.length && items.every((item) => item.complete)}
                 indeterminate={indeterminate}
                 transitionDuration={0}
               />
