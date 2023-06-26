@@ -91,7 +91,6 @@ func (i Item) post(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"item": item})
 }
 
-// TODO: User verification
 func (i Item) put(c *gin.Context) {
 	var body ItemPutBody
 	bodyAsByteArray, bodyErr := io.ReadAll(c.Request.Body)
