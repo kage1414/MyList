@@ -1,9 +1,11 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { TableSelection } from "./TableSelection";
 import axios from "axios";
 import { AddRow } from "./AddRow";
 import { Box, Button } from "@mantine/core";
 import { useStyles } from "./styles";
+
+const INTERVAL = 60000;
 
 type Props = {
   username: string;
@@ -25,7 +27,7 @@ export const TableSelectionContainer = ({ username, onLogout }: Props) => {
   const { classes } = useStyles();
   const [items, setItems] = useState<Item[]>([]);
 
-  const fetchData = () => {
+  const fetchData = useCallback(() => {
     axios<Data>("/api/items", { method: "GET", params: { username } }).then(
       (response) => {
         const {
@@ -44,7 +46,7 @@ export const TableSelectionContainer = ({ username, onLogout }: Props) => {
         setItems(listNames);
       }
     );
-  };
+  }, [username]);
 
   const onToggleRow = async (
     item: Item,
@@ -66,7 +68,14 @@ export const TableSelectionContainer = ({ username, onLogout }: Props) => {
     });
   };
 
-  useEffect(fetchData, [username]);
+  useEffect(() => {
+    fetchData();
+    const interval = setInterval(() => {
+      fetchData();
+    }, INTERVAL);
+
+    return () => clearInterval(interval);
+  }, [fetchData]);
 
   return (
     <Box className={classes.container}>
