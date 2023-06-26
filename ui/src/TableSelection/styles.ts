@@ -22,4 +22,20 @@ export const useStyles = createStyles((theme) => ({
     paddingTop: 30,
     paddingBottom: 30,
   },
+  item: {
+    backgroundColor:
+      theme.colorScheme === "dark" ? theme.colors.dark[7] : theme.white,
+  },
+  dragHandle: {
+    ...theme.fn.focusStyles(),
+    width: rem(40),
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    height: "100%",
+    color:
+      theme.colorScheme === "dark"
+        ? theme.colors.dark[1]
+        : theme.colors.gray[6],
+  },
 }));

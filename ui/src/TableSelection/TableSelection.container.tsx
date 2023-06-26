@@ -62,6 +62,16 @@ export const TableSelectionContainer = ({ username, onLogout }: Props) => {
     });
   };
 
+  const onDragRow = (id: string, priority: number, shouldRefetch = true) => {
+    priority++;
+    const body = { id, username, priority };
+    axios.put("/api/item", body).then(() => {
+      if (shouldRefetch) {
+        fetchData();
+      }
+    });
+  };
+
   const onToggleAll: React.ChangeEventHandler<HTMLInputElement> = async (e) => {
     items.forEach(async (item, idx) => {
       await onToggleRow(item, e.target.checked, idx === items.length - 1);
@@ -86,6 +96,7 @@ export const TableSelectionContainer = ({ username, onLogout }: Props) => {
         onToggleRow={onToggleRow}
         onToggleAll={onToggleAll}
         fetchData={fetchData}
+        onDragRow={onDragRow}
       />
     </Box>
   );

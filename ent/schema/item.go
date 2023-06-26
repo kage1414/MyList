@@ -22,7 +22,7 @@ func (Item) Fields() []ent.Field {
 			Optional().
 			Default(""),
 		field.Int("priority").
-			Range(1, 100).
+			Range(-1, 100).
 			Optional().
 			Nillable().
 			Default(1),
