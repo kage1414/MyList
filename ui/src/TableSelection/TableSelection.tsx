@@ -59,6 +59,8 @@ export const TableSelection = ({
   const indeterminate =
     items.some((item) => item.complete) &&
     !items.every((item) => item.complete);
+
+  const allChecked = !!items.length && items.every((item) => item.complete);
   return (
     <ScrollArea>
       <Table miw={800} verticalSpacing="sm">
@@ -67,7 +69,7 @@ export const TableSelection = ({
             <th style={{ width: rem(40) }}>
               <Checkbox
                 onChange={onToggleAll}
-                checked={!!items.length && items.every((item) => item.complete)}
+                checked={allChecked}
                 indeterminate={indeterminate}
                 transitionDuration={0}
               />
