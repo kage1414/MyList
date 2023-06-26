@@ -14,7 +14,6 @@ export type Item = {
   name: string;
   priority: number;
   complete: boolean;
-  username: string;
 };
 
 type Data = {
@@ -51,7 +50,7 @@ export const TableSelectionContainer = ({ username }: Props) => {
     complete?: boolean,
     shouldRefetch = true
   ) => {
-    const body = item;
+    const body = { ...item, username };
     body.complete = complete ?? !item.complete;
     await axios.put("/api/item", body).then(() => {
       if (shouldRefetch) {

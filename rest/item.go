@@ -117,6 +117,13 @@ func (i Item) put(c *gin.Context) {
 		return
 	}
 
+	user, _ := item.QueryUser().Only(i.ctx)
+
+	if user.Username != *body.Username {
+		c.AbortWithStatus(http.StatusForbidden)
+		return
+	}
+
 	draft := i.client.Item.UpdateOne(item)
 
 	if body.Name != nil {
