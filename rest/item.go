@@ -92,6 +92,7 @@ func (i Item) post(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"item": item})
 }
 
+// TODO: User verification
 func (i Item) put(c *gin.Context) {
 	var body ItemPutBody
 	bodyAsByteArray, bodyErr := io.ReadAll(c.Request.Body)
@@ -118,14 +119,6 @@ func (i Item) put(c *gin.Context) {
 		c.AbortWithError(http.StatusInternalServerError, itemErr)
 		return
 	}
-
-	// user := item.QueryUser().OnlyX(i.ctx)
-
-	// if user.Username != *body.Username {
-	// 	fmt.Println("username Err")
-	// 	c.AbortWithStatus(http.StatusForbidden)
-	// 	return
-	// }
 
 	draft := i.client.Item.UpdateOne(item)
 
