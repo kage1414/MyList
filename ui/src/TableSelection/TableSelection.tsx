@@ -75,7 +75,7 @@ export const TableSelection = ({
               />
             </th>
             <th>Task</th>
-            <th>Delete</th>
+            <th style={{ width: rem(40) }}>Delete</th>
           </tr>
         </thead>
         <tbody>{rows}</tbody>

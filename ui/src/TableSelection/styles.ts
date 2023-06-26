@@ -1,4 +1,4 @@
-import { createStyles } from "@mantine/core";
+import { createStyles, rem } from "@mantine/core";
 
 export const useStyles = createStyles((theme) => ({
   rowSelected: {
@@ -11,7 +11,7 @@ export const useStyles = createStyles((theme) => ({
     flexDirection: "row",
     display: "flex",
   },
-  container: {},
+  container: { padding: rem(20) },
   logout: {
     width: 100,
   },

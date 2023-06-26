@@ -1,4 +1,4 @@
-import { Button, TextInput, createStyles, rem } from "@mantine/core";
+import { Box, Button, TextInput, createStyles, rem } from "@mantine/core";
 
 import { useForm } from "@mantine/form";
 
@@ -11,12 +11,21 @@ const useStyles = createStyles((theme) => ({
   root: {
     position: "relative",
   },
-
+  container: {
+    display: "flex",
+    height: "100%",
+    width: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  form: {
+    display: "flex",
+    flexDirection: "row",
+  },
   input: {
     height: rem(54),
     paddingTop: rem(18),
   },
-
   label: {
     position: "absolute",
     pointerEvents: "none",
@@ -24,6 +33,11 @@ const useStyles = createStyles((theme) => ({
     paddingLeft: theme.spacing.sm,
     paddingTop: `calc(${theme.spacing.sm} / 2)`,
     zIndex: 1,
+  },
+  button: {
+    height: rem(54),
+    width: rem(100),
+    marginLeft: rem(20),
   },
 }));
 
@@ -41,16 +55,18 @@ export const Login = ({ handleUsername }: Props) => {
   };
 
   return (
-    <>
-      <form onSubmit={onSubmit}>
+    <Box className={classes.container}>
+      <form className={classes.form} onSubmit={onSubmit}>
         <TextInput
           label="Username"
           placeholder="Username"
           classNames={classes}
           {...form.getInputProps("username")}
         />
-        <Button type="submit">Submit</Button>
+        <Button className={classes.button} type="submit">
+          Submit
+        </Button>
       </form>
-    </>
+    </Box>
   );
 };
