@@ -22,6 +22,7 @@ export const AddRow = ({ fetchData, username }: Props) => {
       .post("/api/item", { name: form.values.newItem, username })
       .then(() => {
         fetchData();
+        form.reset();
       });
   };
 
