@@ -2,7 +2,6 @@ package rest
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 
 	"MyList/ent"
@@ -34,8 +33,6 @@ func (i Items) Get(c *gin.Context) {
 		Where(user.UsernameEQ(username)).
 		QueryItems().
 		All(i.ctx)
-
-	fmt.Println(items)
 
 	if itemErr != nil {
 		c.AbortWithError(http.StatusInternalServerError, itemErr)

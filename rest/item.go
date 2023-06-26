@@ -3,7 +3,6 @@ package rest
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 
@@ -105,7 +104,6 @@ func (i Item) put(c *gin.Context) {
 	id, idErr := uuid.Parse(body.ID)
 
 	if idErr != nil {
-		fmt.Println("idErr")
 		c.AbortWithError(http.StatusInternalServerError, idErr)
 		return
 	}
@@ -115,7 +113,6 @@ func (i Item) put(c *gin.Context) {
 		Only(i.ctx)
 
 	if itemErr != nil {
-		fmt.Println("itemErr")
 		c.AbortWithError(http.StatusInternalServerError, itemErr)
 		return
 	}
@@ -137,7 +134,6 @@ func (i Item) put(c *gin.Context) {
 	_, saveErr := draft.Save(i.ctx)
 
 	if saveErr != nil {
-		fmt.Println("saveErr")
 		c.AbortWithError(http.StatusInternalServerError, saveErr)
 		return
 	}
