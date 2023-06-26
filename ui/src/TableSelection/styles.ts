@@ -15,4 +15,10 @@ export const useStyles = createStyles((theme) => ({
     flexDirection: "column",
     justifyContent: "start",
   },
+  logout: {
+    width: 100,
+    position: "fixed",
+    top: 50,
+    left: 50,
+  },
 }));

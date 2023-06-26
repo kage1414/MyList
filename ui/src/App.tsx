@@ -12,10 +12,15 @@ function App() {
     setUsername(username);
   };
 
+  const onLogout: React.MouseEventHandler<HTMLButtonElement> = (e) => {
+    e.preventDefault();
+    setUsername("");
+  };
+
   return (
     <>
       {username ? (
-        <TableSelectionContainer username={username} />
+        <TableSelectionContainer username={username} onLogout={onLogout} />
       ) : (
         <Login username={username} handleUsername={handleUsername} />
       )}

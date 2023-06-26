@@ -2,11 +2,12 @@ import { useEffect, useState } from "react";
 import { TableSelection } from "./TableSelection";
 import axios from "axios";
 import { AddRow } from "./AddRow";
-import { Box } from "@mantine/core";
+import { Box, Button } from "@mantine/core";
 import { useStyles } from "./styles";
 
 type Props = {
   username: string;
+  onLogout: React.MouseEventHandler<HTMLButtonElement>;
 };
 
 export type Item = {
@@ -20,7 +21,7 @@ type Data = {
   items: Item[];
 };
 
-export const TableSelectionContainer = ({ username }: Props) => {
+export const TableSelectionContainer = ({ username, onLogout }: Props) => {
   const { classes } = useStyles();
   const [items, setItems] = useState<Item[]>([]);
 
@@ -69,6 +70,9 @@ export const TableSelectionContainer = ({ username }: Props) => {
 
   return (
     <Box className={classes.container}>
+      <Button className={classes.logout} onClick={onLogout}>
+        Logout
+      </Button>
       <AddRow fetchData={fetchData} username={username} />
       <TableSelection
         items={items}
